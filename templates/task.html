@@ -4,7 +4,7 @@
     <form class="task-form" action="" method="post">
         {{ form.hidden_tag() }}
         {{ form.csrf_token }}
-        {% for field in form if field.name not in ['csrf_token', 'submit'] %}
+        {% for field in form if field.name not in ['csrf_token', 'submit', 'isFinished'] %}
             <p>
                 {{ field.label }}<br>
                 {{ field(class="form-control") }}<br>
@@ -13,6 +13,7 @@
                 {% endfor %}
             </p>
         {% endfor %}
+        <p>{{ form.isFinished() }} {{ form.isFinished.label }}</p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         {{ message }}
     </form>

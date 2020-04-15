@@ -15,6 +15,7 @@ class Jobs(SqlAlchemyBase):
     startDate = Column(DateTime, default=datetime.datetime.now)
     endDate = Column(DateTime, default=None)
     isFinished = sqlalchemy.Column(Boolean, default=True)
+    user = orm.relation('User')
 
     def __repr__(self):
         return f'<Job> {self.id} {self.teamLeader} {self.job}'

@@ -37,6 +37,7 @@ class LoginForm(FlaskForm):
 
 
 class JobsForm(FlaskForm):
+    id = IntegerField('Team Leader', validators=[DataRequired()])
     job = StringField('Job', validators=[DataRequired()])
     workSize = IntegerField('Duration', validators=[DataRequired()])
     collaborators = StringField('Collaborators', validators=[DataRequired()])
@@ -44,6 +45,7 @@ class JobsForm(FlaskForm):
                                    validators=[InputRequired()], default=datetime.datetime.now())
     endDate = DateTimeLocalField('Finish Date', format='%Y-%m-%dT%H:%M',
                                  validators=[InputRequired()])
+    isFinished = BooleanField('Is finished?')
     submit = SubmitField('Add Task')
 
 
@@ -98,10 +100,11 @@ def task():
     form = JobsForm()
     if form.validate_on_submit():
         session = dbSession.createSession()
-        job = Jobs(teamLeader=current_user.id, job=form.job.data, workSize=form.workSize.data,
+        job = Jobs(teamLeader=form.id.data, job=form.job.data, workSize=form.workSize.data,
                    collaborators=form.collaborators.data, startDate=form.startDate.data,
-                   endDate=form.endDate.data, isFinished=False)
-        session.add(job)
+                   endDate=form.endDate.data, isFinished=form.isFinished.data)
+        current_user.jobs.append(job)
+        session.merge(current_user)
         session.commit()
         return redirect('/')
     return render_template('task.html', title='Task addition', form=form)
