@@ -3,3 +3,41 @@ form.register-form, form.login-form {
   margin-right: auto;
   max-width: 800px
 }
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  background: #d3d3d3;
+  width: 100%;
+  height: 100px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #d3d3d3;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+div.header-left {
+  margin-left: 30px;
+}
+
+div.header-right {
+  margin-right: 30px;
+}
+
+div.container {
+  background-color: lightgrey;
+  border: 2px groove grey;
+  border-radius: 5px;
+  font-size: 16pt;
+}
+
+div.head {
+  border: 2px groove grey;
+}
+
+div.body {
+  border: 2px groove grey;
+  background-color: paleturquoise;
+  font-size: 16pt;
+}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <p style="text-align:center"><a href="task" class="btn btn-success">Add task</a></p>
+    {% endif %}
+    {% for job in jobs %}
+        <h3 style="text-align:center; margin-bottom:20px">Activity №{{job.id}}</h3>
+        <div class="container" style="margin-bottom:20px">
+            <div class="row">
+                <div class="col-xl-4 head">Title of activity</div>
+                <div class="col-xl-2 head">Team leader</div>
+                <div class="col-xl-2 head">Duration</div>
+                <div class="col-xl-2 head">List of collaborators</div>
+                <div class="col-xl-2 head">Is finished</div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4 body">{{ job.job }}</div>
+                <div class="col-xl-2 body">
+                    {% for user in users %}{% if user.id == job.teamLeader %}{{ user.surname }} {{ user.name }}{% endif %}{% endfor %}
+                </div>
+                <div class="col-xl-2 body">{{ job.workSize }}</div>
+                <div class="col-xl-2 body">{{ job.collaborators }}</div>
+                <div class="col-xl-2 body">Is{% if job.isFinished == False %} not {% endif%} finished</div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

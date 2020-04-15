@@ -9,19 +9,19 @@ from flask_login import UserMixin
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    surname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    position = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    speciality = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    address = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    email = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=True)
-    hashedPassword = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    modifiedDate = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    surname = Column(String, nullable=True)
+    name = Column(String, nullable=True)
+    age = Column(Integer, nullable=True)
+    position = Column(String, nullable=True)
+    speciality = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    email = Column(String, index=True, unique=True, nullable=True)
+    hashedPassword = Column(String, nullable=True)
+    modifiedDate = Column(DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
-        return f'<Colonist> {str(self.id)} {str(self.name)} {str(self.surname)}'
+        return f'<Colonist> {self.id} {self.name} {self.surname}'
 
     def setPassword(self, password):
         self.hashedPassword = generate_password_hash(password)

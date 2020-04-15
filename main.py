@@ -1,11 +1,13 @@
 from flask import Flask, render_template, redirect
 from flask_wtf import FlaskForm
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from wtforms import IntegerField, StringField, PasswordField, BooleanField, SubmitField
-from wtforms.fields.html5 import EmailField
-from wtforms.validators import DataRequired
+from wtforms.fields.html5 import EmailField, DateTimeLocalField
+from wtforms.validators import DataRequired, InputRequired
 from data import dbSession
 from data.users import User
+from data.jobs import Jobs
+import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -34,6 +36,17 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
+class JobsForm(FlaskForm):
+    job = StringField('Job', validators=[DataRequired()])
+    workSize = IntegerField('Duration', validators=[DataRequired()])
+    collaborators = StringField('Collaborators', validators=[DataRequired()])
+    startDate = DateTimeLocalField('Start Date', format='%Y-%m-%dT%H:%M',
+                                   validators=[InputRequired()], default=datetime.datetime.now())
+    endDate = DateTimeLocalField('Finish Date', format='%Y-%m-%dT%H:%M',
+                                 validators=[InputRequired()])
+    submit = SubmitField('Add Task')
+
+
 @loginManager.user_loader
 def loadUser(userId):
     session = dbSession.createSession()
@@ -55,13 +68,8 @@ def register():
         user.setPassword(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/success')
+        return redirect('/')
     return render_template('register.html', title='Register', form=form)
-
-
-@app.route('/success')
-def success():
-    return 'Форма отправлена'
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -84,9 +92,27 @@ def logout():
     return redirect('/')
 
 
+@app.route('/task', methods=['GET', 'POST'])
+@login_required
+def task():
+    form = JobsForm()
+    if form.validate_on_submit():
+        session = dbSession.createSession()
+        job = Jobs(teamLeader=current_user.id, job=form.job.data, workSize=form.workSize.data,
+                   collaborators=form.collaborators.data, startDate=form.startDate.data,
+                   endDate=form.endDate.data, isFinished=False)
+        session.add(job)
+        session.commit()
+        return redirect('/')
+    return render_template('task.html', title='Task addition', form=form)
+
+
 @app.route('/')
 def mainPage():
-    return render_template('base.html')
+    session = dbSession.createSession()
+    users = session.query(User).all()
+    jobs = session.query(Jobs).all()
+    return render_template('jobs.html', users=users, jobs=jobs)
 
 
 def main():
