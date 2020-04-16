@@ -20,6 +20,7 @@ class User(SqlAlchemyBase, UserMixin):
     hashedPassword = Column(String, nullable=True)
     modifiedDate = Column(DateTime, default=datetime.datetime.now)
     jobs = orm.relation('Jobs', back_populates='user')
+    departments = orm.relation('Department', back_populates='user')
 
     def __repr__(self):
         return f'<Colonist> {self.id} {self.name} {self.surname}'

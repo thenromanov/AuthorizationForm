@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, InputRequired
 from data import dbSession
 from data.users import User
 from data.jobs import Jobs
+from data.departments import Department
 import datetime
 
 app = Flask(__name__)
@@ -47,6 +48,14 @@ class JobsForm(FlaskForm):
                                  validators=[InputRequired()])
     isFinished = BooleanField('Is finished?')
     submit = SubmitField('Add Task')
+
+
+class DepartmentForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    chief = IntegerField('Chief', validators=[DataRequired()])
+    members = StringField('Members', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
+    submit = SubmitField('Add department')
 
 
 @loginManager.user_loader
@@ -96,7 +105,7 @@ def logout():
 
 @app.route('/task', methods=['GET', 'POST'])
 @login_required
-def task():
+def addTask():
     form = JobsForm()
     if form.validate_on_submit():
         session = dbSession.createSession()
@@ -159,6 +168,72 @@ def removeTask(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/department', methods=['GET', 'POST'])
+@login_required
+def addDepartment():
+    form = DepartmentForm()
+    if form.validate_on_submit():
+        session = dbSession.createSession()
+        department = Department(title=form.title.data, chief=form.chief.data, members=form.members.data,
+                                email=form.email.data)
+        current_user.departments.append(department)
+        session.merge(current_user)
+        session.commit()
+        return redirect('/departments')
+    return render_template('department.html', title='Department addition', form=form)
+
+
+@app.route('/department/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editDepartment(id):
+    form = DepartmentForm()
+    if request.method == 'GET':
+        session = dbSession.createSession()
+        department = session.query(Department).filter(Department.id == id, (Department.user == current_user)
+                                                      | (current_user.id == 1)).first()
+        if department:
+            form.title.data = department.title
+            form.chief.data = department.chief
+            form.members.data = department.members
+            form.email.data = department.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = dbSession.createSession()
+        department = session.query(Department).filter(Department.id == id, (Department.user == current_user)
+                                                      | (current_user.id == 1)).first()
+        if department:
+            department.title = form.title.data
+            department.chief = form.chief.data
+            department.members = form.members.data
+            department.email = form.email.data
+            session.commit()
+            return redirect('/departments')
+    return render_template('department.html', title='Department edition', form=form)
+
+
+@app.route('/department_remove/<int:id>', methods=['GET', 'POST'])
+@login_required
+def removeDepartment(id):
+    session = dbSession.createSession()
+    department = session.query(Department).filter(Department.id == id, (Department.user == current_user)
+                                                  | (current_user.id == 1)).first()
+    if department:
+        session.delete(department)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/departments')
+
+
+@app.route('/departments')
+def departmentsPage():
+    session = dbSession.createSession()
+    users = session.query(User).all()
+    departments = session.query(Department).all()
+    return render_template('departments.html', users=users, departments=departments)
 
 
 @app.route('/')

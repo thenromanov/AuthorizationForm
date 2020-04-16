@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if current_user.is_authenticated %}
-        <p style="text-align:center"><a href="task" class="btn btn-success">Add task</a></p>
-    {% endif %}
+    <p style="text-align:center">
+        <a href="departments" class="btn btn-secondary">Departments</a>
+        {% if current_user.is_authenticated %}
+            <a href="task" class="btn btn-success">Add task</a>
+        {% endif %}
+    </p>
     {% for job in jobs %}
-        <h3 style="text-align:center; margin-bottom:20px">Activity №{{job.id}}</h3>
+        <h3 style="text-align:center; margin-bottom:20px">Activity №{{ job.id }}</h3>
         <div class="container" style="margin-bottom:20px">
             <div class="row">
                 <div class="col-xl-4 head">Title of activity</div>
