@@ -8,6 +8,7 @@ from data import dbSession
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Department
+from data.categories import Category
 import datetime
 
 app = Flask(__name__)
@@ -42,6 +43,7 @@ class JobsForm(FlaskForm):
     job = StringField('Job', validators=[DataRequired()])
     workSize = IntegerField('Duration', validators=[DataRequired()])
     collaborators = StringField('Collaborators', validators=[DataRequired()])
+    category = IntegerField('Hazard Category', validators=[DataRequired()])
     startDate = DateTimeLocalField('Start Date', format='%Y-%m-%dT%H:%M',
                                    validators=[InputRequired()], default=datetime.datetime.now())
     endDate = DateTimeLocalField('Finish Date', format='%Y-%m-%dT%H:%M',
@@ -112,6 +114,10 @@ def addTask():
         job = Jobs(teamLeader=form.teamLeader.data, job=form.job.data, workSize=form.workSize.data,
                    collaborators=form.collaborators.data, startDate=form.startDate.data,
                    endDate=form.endDate.data, isFinished=form.isFinished.data)
+        category = session.query(Category).filter(Category.level == form.category.data).first()
+        if not category:
+            category = Category(level=form.category.data)
+        job.categories.append(category)
         current_user.jobs.append(job)
         session.merge(current_user)
         session.commit()

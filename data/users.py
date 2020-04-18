@@ -19,7 +19,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = Column(String, index=True, unique=True, nullable=True)
     hashedPassword = Column(String, nullable=True)
     modifiedDate = Column(DateTime, default=datetime.datetime.now)
-    jobs = orm.relation('Jobs', back_populates='user')
+    jobs = orm.relation('Jobs', back_populates='user', lazy='subquery')
     departments = orm.relation('Department', back_populates='user')
 
     def __repr__(self):
