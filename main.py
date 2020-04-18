@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, abort
+from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
 from flask_wtf import FlaskForm
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from wtforms import IntegerField, StringField, PasswordField, BooleanField, SubmitField
@@ -63,6 +63,11 @@ class DepartmentForm(FlaskForm):
 def loadUser(userId):
     session = dbSession.createSession()
     return session.query(User).get(userId)
+
+
+@app.errorhandler(404)
+def NotFound(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @app.route('/register', methods=['GET', 'POST'])

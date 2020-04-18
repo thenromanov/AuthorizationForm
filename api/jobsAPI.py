@@ -16,3 +16,16 @@ def getJobs():
             'jobs': [item.to_dict(only=('teamLeader', 'job', 'workSize', 'collaborators', 'isFinished')) for item in jobs]
         }
     )
+
+
+@blueprint.route('/api/jobs/<int:id>', methods=['GET'])
+def getJob(id):
+    session = dbSession.createSession()
+    job = session.query(Jobs).get(id)
+    if job:
+        return jsonify(
+            {
+                'jobs': job.to_dict(only=('teamLeader', 'job', 'workSize', 'collaborators', 'isFinished'))
+            }
+        )
+    return jsonify({'error': 'Not found'})
