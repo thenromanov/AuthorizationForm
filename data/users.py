@@ -4,9 +4,10 @@ from sqlalchemy import orm, Integer, String, DateTime, Column
 from .dbSession import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy_serializer import SerializerMixin
 
 
-class User(SqlAlchemyBase, UserMixin):
+class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -19,7 +20,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = Column(String, index=True, unique=True, nullable=True)
     hashedPassword = Column(String, nullable=True)
     modifiedDate = Column(DateTime, default=datetime.datetime.now)
-    jobs = orm.relation('Jobs', back_populates='user')
+    jobs = orm.relation('Jobs', back_populates='user', lazy='subquery')
     departments = orm.relation('Department', back_populates='user')
 
     def __repr__(self):

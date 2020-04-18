@@ -8,6 +8,7 @@ from data import dbSession
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Department
+from api import jobsAPI
 import datetime
 
 app = Flask(__name__)
@@ -246,6 +247,7 @@ def mainPage():
 
 def main():
     dbSession.globalInit('db/MarsOne.sqlite')
+    app.register_blueprint(jobsAPI.blueprint)
     app.run()
 
 
