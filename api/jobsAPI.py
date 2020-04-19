@@ -1,5 +1,5 @@
 import flask
-from flask import jsonify
+from flask import jsonify, request
 from data import dbSession
 from data.jobs import Jobs
 
@@ -29,3 +29,24 @@ def getJob(id):
             }
         )
     return jsonify({'error': 'Not found'})
+
+
+@blueprint.route('/api/jobs', methods=['POST'])
+def createJob():
+    if not request.json:
+        return jsonify({'error': 'Empty request'})
+    elif not(all(key in request.json for key in ['teamLeader', 'job', 'workSize', 'collaborators', 'isFinished'])):
+        return jsonify({'error': 'Bad request'})
+    session = dbSession.createSession()
+    job = Jobs(teamLeader=request.json['teamLeader'],
+               job=request.json['job'],
+               workSize=request.json['workSize'],
+               collaborators=request.json['collaborators'],
+               isFinished=request.json['isFinished'])
+    if 'id' in request.json:
+        if session.query(Jobs).get(request.json['id']):
+            return jsonify({'error': 'Id already exists'})
+        job.id = request.json['id']
+    session.add(job)
+    session.commit()
+    return jsonify({'success': 'OK'})
