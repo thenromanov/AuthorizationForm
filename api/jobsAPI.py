@@ -61,3 +61,20 @@ def deleteJob(id):
     session.delete(job)
     session.commit()
     return jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/jobs/<int:id>', methods=['PUT'])
+def editJob(id):
+    session = dbSession.createSession()
+    job = session.query(Jobs).get(id)
+    if not job:
+        return jsonify({'error': 'Not found'})
+    elif not request.json:
+        return jsonify({'error': 'Bad request'})
+    job.teamLeader = request.json.get('teamLeader', job.teamLeader)
+    job.job = request.json.get('job', job.job)
+    job.workSize = request.json.get('workSize', job.workSize)
+    job.collaborators = request.json.get('collaborators', job.collaborators)
+    job.isFinished = request.json.get('isFinished', job.isFinished)
+    session.commit()
+    return jsonify({'success': 'OK'})
