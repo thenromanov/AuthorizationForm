@@ -9,7 +9,7 @@ from data import dbSession
 from data.users import User
 from data.jobs import Jobs
 from data.departments import Department
-from api import jobsAPI
+from api import jobsResources
 from api import usersResources
 import datetime
 
@@ -252,6 +252,8 @@ def main():
     dbSession.globalInit('db/MarsOne.sqlite')
     api.add_resource(usersResources.UsersResource, '/api/users')
     api.add_resource(usersResources.UserResource, '/api/users/<int:id>')
+    api.add_resource(jobsResources.JobsResource, '/api/jobs')
+    api.add_resource(jobsResources.JobResource, '/api/jobs/<int:id>')
     app.run()
 
 
