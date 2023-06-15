@@ -12,6 +12,7 @@ from data.departments import Department
 from api import jobsResources
 from api import usersResources
 import datetime
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -251,6 +252,8 @@ def mainPage():
 
 
 def main():
+    if not os.path.exists('db'):
+        os.makedirs('db')
     dbSession.globalInit('db/MarsOne.sqlite')
     api.add_resource(usersResources.UsersResource, '/api/users')
     api.add_resource(usersResources.UserResource, '/api/users/<int:id>')
