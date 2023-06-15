@@ -12,7 +12,7 @@ class Department(SqlAlchemyBase, SerializerMixin):
     chief = Column(Integer, ForeignKey('users.id'))
     members = Column(String, nullable=True)
     email = Column(String, nullable=True)
-    user = orm.relation('User')
+    user = orm.relationship('User')
 
     def __repr__(self):
         return f'<Department> {self.id} {self.title} {self.chief}'

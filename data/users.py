@@ -20,8 +20,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = Column(String, index=True, unique=True, nullable=True)
     hashedPassword = Column(String, nullable=True)
     modifiedDate = Column(DateTime, default=datetime.datetime.now)
-    jobs = orm.relation('Jobs', back_populates='user', lazy='subquery')
-    departments = orm.relation('Department', back_populates='user')
+    jobs = orm.relationship('Jobs', back_populates='user', lazy='subquery')
+    departments = orm.relationship('Department', back_populates='user')
 
     def __repr__(self):
         return f'<Colonist> {self.id} {self.name} {self.surname}'

@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 from wtforms import IntegerField, StringField, PasswordField, BooleanField, SubmitField
-from wtforms.fields.html5 import EmailField, DateTimeLocalField
+from wtforms.fields import EmailField, DateTimeLocalField
 from wtforms.validators import DataRequired, InputRequired
 from data import dbSession
 from data.users import User
@@ -24,7 +24,8 @@ loginManager.init_app(app)
 class RegisterForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    passwordRepeat = PasswordField('Password repeat', validators=[DataRequired()])
+    passwordRepeat = PasswordField(
+        'Password repeat', validators=[DataRequired()])
     surname = StringField('Surname', validators=[DataRequired()])
     name = StringField('Name', validators=[DataRequired()])
     age = IntegerField('Age', validators=[DataRequired()])
@@ -92,7 +93,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session = dbSession.createSession()
-        user = session.query(User).filter(User.email == form.email.data).first()
+        user = session.query(User).filter(
+            User.email == form.email.data).first()
         if user and user.checkPassword(form.password.data):
             login_user(user, remember=form.rememberMe.data)
             return redirect('/')
